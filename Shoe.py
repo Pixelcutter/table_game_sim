@@ -1,41 +1,24 @@
-from models import Card
+import models
 import random
 
 # NEED TO CHANGE HOW FINAL CUT WORKS, NEED A RED CUT CARD INSERTED IN THE SHOE AND WHEN IT APPEARS, THE SHOE IS CHANGED
 
-cards_per_deck = 52
-suits = ["H", "D", "C", "S"]
-cards = {
-    "2": 2,
-    "3": 3,
-    "4": 4,
-    "5": 5,
-    "6": 6,
-    "7": 7,
-    "8": 8,
-    "9": 9,
-    "10": 10,
-    "J": 10,
-    "Q": 10,
-    "K": 10,
-    "A": 1,
-}
-
 
 class Shoe:
     def __init__(self, number_of_decks, exlude_cards=[]):
-        self.discards = []
         self.number_of_decks = number_of_decks
         self.exluded_cards = exlude_cards
+        self.cut_card_found = False
+        self.cards_popped = 0
         self.build_shoe()
 
     def build_shoe(self):
         self.cards = []
         for _ in range(self.number_of_decks):
-            for suit in suits:
-                for card, value in cards.items():
+            for suit in models.suits:
+                for card, value in models.cards.items():
                     if card not in self.exluded_cards:
-                        self.cards.append(Card(suit, card, value))
+                        self.cards.append(models.Card(suit, value, card))
 
     def count(self):
         return len(self.cards)
@@ -45,31 +28,26 @@ class Shoe:
 
     def deal_n_cards(self, number_of_cards):
         cards = []
-        cut_card_found = False
 
         for _ in range(number_of_cards):
             card = self.cards.pop()
+            self.cards_popped += 1
             if card is None:
-                cut_card_found = True
+                self.cut_card_found = True
                 card = self.cards.pop()
+                self.cards_popped += 1
             cards.append(card)
 
-        return {"cut_card": cut_card_found, "cards": cards}
+        return cards
 
-    def shuffle_and_cut(self):
+    def shuffle_and_cut(self, cut_point=0):
         self.shuffle()
-        self.cut()
+        self.cut(cut_point)
 
-    def insert_cut_card(self):
-        cut_point = self.count() // 2 if self.number_of_decks <= 2 else cards_per_deck
+    def insert_cut_card(self, cut_point=0):
         self.cards.insert(cut_point, None)
 
-    def cut(self):
-        if self.number_of_decks <= 2:
-            cut_point = random.randint(26, len(self.cards) - 26)
-        else:
-            cut_point = random.randint(cards_per_deck, len(self.cards) - cards_per_deck)
-
+    def cut(self, cut_point=None):
         self.cards = self.cards[cut_point:] + self.cards[:cut_point]
 
     def __str__(self):
