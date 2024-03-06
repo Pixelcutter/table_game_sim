@@ -8,8 +8,6 @@ class Shoe:
     def __init__(self, number_of_decks, exlude_cards=[]):
         self.number_of_decks = number_of_decks
         self.exluded_cards = exlude_cards
-        self.cut_card_found = False
-        self.cards_popped = 0
         self.build_shoe()
 
     def build_shoe(self):
@@ -19,6 +17,9 @@ class Shoe:
                 for card, value in models.cards.items():
                     if card not in self.exluded_cards:
                         self.cards.append(models.Card(suit, value, card))
+
+    def reset_shoe(self):
+        self.build_shoe()
 
     def count(self):
         return len(self.cards)
@@ -31,11 +32,8 @@ class Shoe:
 
         for _ in range(number_of_cards):
             card = self.cards.pop()
-            self.cards_popped += 1
             if card is None:
-                self.cut_card_found = True
                 card = self.cards.pop()
-                self.cards_popped += 1
             cards.append(card)
 
         return cards
@@ -43,9 +41,6 @@ class Shoe:
     def shuffle_and_cut(self, cut_point=0):
         self.shuffle()
         self.cut(cut_point)
-
-    def insert_cut_card(self, cut_point=0):
-        self.cards.insert(cut_point, None)
 
     def cut(self, cut_point=None):
         self.cards = self.cards[cut_point:] + self.cards[:cut_point]
