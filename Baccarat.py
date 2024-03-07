@@ -63,7 +63,7 @@ class Baccarat:
             "P": 0,
             "B": 0,
             "T": 0,
-            "display": [[" " for _ in range(70)] for _ in range(10)],
+            "display": [[" " for _ in range(60)] for _ in range(80)],
         }
         self.players = []
         self.hands_left = 0
@@ -141,7 +141,7 @@ class Baccarat:
             "P": 0,
             "B": 0,
             "T": 0,
-            "display": [[" " for _ in range(70)] for _ in range(20)],
+            "display": [[" " for _ in range(60)] for _ in range(80)],
         }
         self.players = []
         self.hands_left = -1
@@ -158,21 +158,33 @@ class Baccarat:
         while self.shoe.count() >= models.cards_per_deck and hands_left != 0:
             winner, last_score = self.play_hand()
             self.board[winner] += 1
-            if winner == last_winner or winner == "T":
+            
+            if winner == "T":
+                board_y += 1
+                self.board["display"][board_y][board_x] = winner
+                continue
+
+            if winner == last_winner:
                 board_y += 1
                 self.board["display"][board_y][board_x] = winner
             elif winner != last_winner and last_winner is not None:
                 board_x += 1
                 board_y = 0
                 self.board["display"][board_y][board_x] = winner
+            
             last_winner = winner
 
     def print_board(self):
+        max_x = self.board["display"][0].index(" ")
         print(
             f"Player: {self.board['P']}, Banker: {self.board['B']}, Tie: {self.board['T']}"
         )
         for row in self.board["display"]:
-            for cell in row:
+            if row.count(" ") == len(row):
+                break
+            for c, cell in enumerate(row):
+                if c == max_x:
+                    break
                 print(cell, end="|")
             print()
         print()
