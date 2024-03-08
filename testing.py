@@ -35,7 +35,7 @@ def main():
                 loss_count += 1
                 current_winner = display[y][x]
 
-            if loss_count == 5 or win_count == 10:
+            if loss_count == 6 or win_count == 10:
                 break
 
             y += 1
@@ -43,7 +43,7 @@ def main():
                 y = 0
                 x += 1
         
-        if loss_count == 5:
+        if loss_count == 6:
             times_lost += 1
         else:
             times_won += 1
