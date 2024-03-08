@@ -107,19 +107,25 @@ class Baccarat:
         player_score = self.score_hand(player_hand)
 
         if self.is_natural(banker_score) or self.is_natural(player_score):
+            # print(
+            #     f"Player Hand: {self.print_hand(player_hand)}, Banker Hand: {self.print_hand(banker_hand)}\n"
+            # )
             return self.natural_winner(banker_score, player_score)
         else:
             last_player_card = None
             if player_score <= 5:
                 last_player_card = self.shoe.deal_n_cards(1)[0]
+                player_hand.append(last_player_card)
                 player_score = (player_score + last_player_card.value) % 10
 
             if banker_score <= 2 or (not last_player_card and banker_score <= 5):
                 new_banker_card = self.shoe.deal_n_cards(1)[0]
+                banker_hand.append(new_banker_card)
                 banker_score = (banker_score + new_banker_card.value) % 10
             elif last_player_card and banker_score != 7:
                 if self.banker_rules[banker_score][last_player_card.value]:
                     new_banker_card = self.shoe.deal_n_cards(1)[0]
+                    banker_hand.append(new_banker_card)
                     banker_score = (banker_score + new_banker_card.value) % 10
 
         if player_score > banker_score:
@@ -134,7 +140,16 @@ class Baccarat:
 
         self.hands_left -= 1
 
+        # print(
+        #     f"Player Hand: {self.print_hand(player_hand)}, Banker Hand: {self.print_hand(banker_hand)}, Winner: {winner}\n"
+        # )
         return winner, score
+
+    def print_hand(self, hand):
+        s = ""
+        for card in hand:
+            s += f"{card}, "
+        return s.rstrip(", ")
 
     def reset_game(self):
         self.board = {
@@ -158,7 +173,7 @@ class Baccarat:
         while self.shoe.count() >= models.cards_per_deck and hands_left != 0:
             winner, last_score = self.play_hand()
             self.board[winner] += 1
-            
+
             if winner == "T":
                 board_y += 1
                 self.board["display"][board_y][board_x] = winner
@@ -171,7 +186,7 @@ class Baccarat:
                 board_x += 1
                 board_y = 0
                 self.board["display"][board_y][board_x] = winner
-            
+
             last_winner = winner
 
     def print_board(self):
